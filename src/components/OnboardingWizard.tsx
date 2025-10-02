@@ -285,7 +285,7 @@ export default function OnboardingWizard({
                 return (
                   <div
                     key={sec.id}
-                    className="section-chip group flex items-center gap-2"
+                    className="section-chip group flex items-center gap-2 bg-white border rounded px-2 py-1 shadow-sm"
                   >
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-xs">{sec.name}</div>
@@ -294,8 +294,25 @@ export default function OnboardingWizard({
                       </div>
                     </div>
                     <button
+                      onClick={async () => {
+                        // Duplicate section logic
+                        await addSection({
+                          name: sec.name + ' (Copy)',
+                          subject_id: sec.subject_id,
+                          teacher_id: sec.teacher_id,
+                          group_id: sec.group_id,
+                          room_id: sec.room_id,
+                        });
+                      }}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-primary/10 text-xs text-primary border border-primary/20 mr-1"
+                      title="Duplicate section"
+                    >
+                      Duplicate
+                    </button>
+                    <button
                       onClick={() => removeSection(sec.id)}
                       className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-destructive/10"
+                      title="Delete section"
                     >
                       <Trash2 className="w-3 h-3 text-destructive" />
                     </button>

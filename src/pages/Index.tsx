@@ -111,10 +111,10 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                  TimeWeaver
+                  Timetable Scheduler
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Intelligent Timetable Scheduling
+                  with Graph Coloring
                 </p>
               </div>
             </div>
@@ -209,6 +209,8 @@ const Index = () => {
               sections={data.sections}
               solveResult={solveResult}
               state={data}
+              addSection={addSection}
+              removeSection={removeSection}
             />
           </div>
         </div>

@@ -35,9 +35,9 @@ export function exportToPDF(sections: any[], solveResult: any, state: any) {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const periods = 6;
   const cells: Array<{ day: string; period: number }> = [];
-  
   for (let d = 0; d < days.length; d++) {
     for (let p = 1; p <= periods; p++) {
+      if (p === 3) continue; // Skip break
       cells.push({ day: days[d], period: p });
     }
   }
@@ -80,32 +80,39 @@ export function exportToPDF(sections: any[], solveResult: any, state: any) {
   y += cellHeight;
 
   // Rows
-  const timeSlots = ['8:00-9:00', '9:00-10:00', '10:00-11:00', '11:00-12:00', '1:00-2:00', '2:00-3:00'];
+  const timeSlots = ['8:00-9:00', '9:00-10:00', 'Break', '11:00-12:00', '1:00-2:00', '2:00-4:00'];
 
   for (let p = 0; p < periods; p++) {
-    // Time slot
     doc.setFillColor(250, 250, 250);
     doc.rect(startX, y, cellWidth, cellHeight, 'F');
     doc.setFontSize(8);
+    if (p === 2) {
+      doc.text('Break', startX + 3, y + 10);
+      // Draw break cells for all days
+      days.forEach((day, dIdx) => {
+        const x = startX + cellWidth + dIdx * cellWidth;
+        doc.rect(x, y, cellWidth, cellHeight);
+        doc.setFontSize(8);
+        doc.text('Break', x + 10, y + 10);
+      });
+      y += cellHeight;
+      continue;
+    }
     doc.text(`P${p + 1}`, startX + 3, y + 6);
     doc.text(timeSlots[p], startX + 3, y + 12);
-
-    // Days
     days.forEach((day, dIdx) => {
       const x = startX + cellWidth + dIdx * cellWidth;
       const key = `${day}_${p + 1}`;
       const items = grid[key] || [];
-
       doc.rect(x, y, cellWidth, cellHeight);
-
       if (items.length > 0) {
         doc.setFontSize(7);
         let textY = y + 5;
         items.forEach((item) => {
-          const subject = getSubjectName(item.subjectId);
-          const teacher = getTeacherName(item.teacherId);
-          const room = getRoomName(item.roomId);
-          
+          // Use correct keys for section fields
+          const subject = getSubjectName(item.subject_id);
+          const teacher = getTeacherName(item.teacher_id);
+          const room = getRoomName(item.room_id);
           doc.text(subject.substring(0, 15), x + 2, textY);
           textY += 4;
           doc.text(`${teacher.substring(0, 12)} | ${room}`, x + 2, textY);
@@ -113,7 +120,6 @@ export function exportToPDF(sections: any[], solveResult: any, state: any) {
         });
       }
     });
-
     y += cellHeight;
   }
 
